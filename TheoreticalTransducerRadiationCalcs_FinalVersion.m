@@ -14,6 +14,8 @@ w = f*2*pi; %frequency of signal (rad/s)
 K = 2*pi/L; %wave number (1/m)
 t = 0.1; %linspace(0,0.1,500); %time (s)
 
+RayleighLength = (K*rad^2)/2
+
 volt = 2.8; %Vpp (V)
 dh = (250e-12)*volt; %max displacement (m)      400e-12 for 2.25MHz elements      250e-12 for 500kHz elements
 U0 = w*dh; %max speed of transducer surface (m/s)
