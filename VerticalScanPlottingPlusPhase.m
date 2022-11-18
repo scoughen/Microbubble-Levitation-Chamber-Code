@@ -1,15 +1,36 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  This script plots a given scan in a specified vertical plane.
+%
+%  The parameters that need to be set are:
+%    Scan parameter:
+%      file = file name of the scan
+%      xRes, yRes, zRes = the x, y, and z resolution of the scan
+%      vToMPa = the sensitivity of the needle hydrophone used for scanning
+%      centerX, centerY = are the X and Y coordinates of the center of the
+%                         acoustic field
+%      Layer = which vertical plane to plot
+% 
+%  S. Coughenour - Nov. 17, 2022
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear
 close all
 clc
 
+% parameters
 file = "LiLens500kHzHighResPhaseScan10SampleAvg0SecDelay3mmOffsetFromTransducerNewAmp9.6Vpp.csv";       
 xRes = 0.5;
 yRes = 1;
 zRes = 0.5;
 vToMPa = 0.8; %500kHz = 0.8V/MPa       2.25MHz = 0.92V/MPa
-
+centerX = 94;
+centerY = 165;
 Layer = 5;
 
+
+%reading and processing scan data
 M = readmatrix(file);
 
 x = M([1:end],1);
@@ -26,8 +47,6 @@ x1 = min(x):xRes:max(x);
 y1 = min(y):yRes:max(y);
 z1 = min(z):zRes:max(z);
 
-centerX = 94;
-centerY = 165;
 topZ = max(z);
 
 x1 = (x1-centerX)/1000;
@@ -39,11 +58,11 @@ xCrop = x1(1:xMax);
 
 [X,Y,Z] = meshgrid(xCrop,y1,z1);
 
+
+% rearrange scan data from vector into 2D matrix
 ptsPerLayer = length(x1)*length(y1);
 numLayers = ceil(length(z)/ptsPerLayer);
-
 startIndex = 1;
-
 for layer = 1:numLayers
     for i = 1:length(y1)
         endIndex = startIndex+length(x1)-1;
@@ -61,6 +80,7 @@ for layer = 1:numLayers
     
 end
 
+% data manipulation of 2D matrix for plotting
 A = flip(A,3);
 A1 = flip(A1,3);
 A2 = flip(A2,3);
@@ -83,6 +103,9 @@ Pha = reshape(PhaCrop(yMidIndex,:,:),length(xCrop),[]);
 
 TopAvgScan = sum(AA(:,9), 'all') / length(A(:,1))
 AreaAvgScan = sum(AA, 'all') / (length(A(:,1))*length(A(1,:)))
+
+
+%%% plot data
 
 figure
 surf(xx,zz,Pha, 'edgecolor','none')

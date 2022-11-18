@@ -1,22 +1,42 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  This script calculates the acoustic field as determined by the following
+%  three versions of the circular baffle piston model.
+%       numerical approximation (the model being validated here)
+%       axial simplification (exact solution)
+%       far field approximation
+%
+%    Theory parameters:
+%      res = the number of elements in each dimension
+%      f = driving frequency in Hz
+%      rad = radius of the transducer in m
+%      volt = voltage applied to the transducer
+%
+%  S. Coughenour - Nov. 17, 2022
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear
 close all
 clc
 
+% parameters
 res = 500;
-
 f = 500e3; %frequency (Hz = 1/s)
 rad = 19e-3; %radius of transducer (m)
+volt = 2.8; %Vpp (V)
 
+% constants
 rho0 = 1000; %equilibrium density = density of water (kg/m^3)
 c = 1480; %speed of sound in water (m/s)
 L = c/f; %wavelength (m)
 w = f*2*pi; %frequency of signal (rad/s)
 K = 2*pi/L; %wave number (1/m)
-t = 0.1; %linspace(0,0.1,500); %time (s)
+t = 0.1; %time (s)
 
-RayleighLength = (K*rad^2)/2
+RayleighLength = (K*rad^2)/2 % calculate the rayleigh length of the transducer
 
-volt = 2.8; %Vpp (V)
+% transducer dynamics calculation
 dh = (250e-12)*volt; %max displacement (m)      400e-12 for 2.25MHz elements      250e-12 for 500kHz elements
 U0 = w*dh; %max speed of transducer surface (m/s)
 

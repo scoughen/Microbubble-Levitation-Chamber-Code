@@ -1,16 +1,43 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  This script compares a given scan of a plane transducer to a theoretical
+%  model based that is a numerical approximation of the circular baffled
+%  piston model.
+%
+%  The parameters that need to be set are:
+%    Scan parameter:
+%      file = file name of the scan
+%      xRes, yRes, zRes = the x, y, and z resolution of the scan
+%      vToMPa = the sensitivity of the needle hydrophone used for scanning
+%      centerX, centerY = are the X and Y coordinates of the center of the
+%                         acoustic field
+%
+%    Theory parameters:
+%      f = driving frequency in Hz
+%      rad = radius of the transducer in m
+%      volt = voltage applied to the transducer
+%
+%  S. Coughenour - Nov. 17, 2022
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear
 close all
 clc
 
 
 %%%%%%%%%%%%%%%%%%%%%%Scan Stuff%%%%%%%%%%%%%%%%%%%%%
-
+%parameters
 file = "SimpleTransducer500kHzHighRes10SampleAvg0SecDelay7mmOffsetFromTransducerNewAmpTry2.csv"; %SimpleTransducer500kHzLowAmplitude10SampleAvg0SecDelay7mmOffsetFromTransducerWithDamperInTank.csv";       
 xRes = 0.5;
 yRes = 1;
 zRes = 0.5;
 vToMPa = 0.8; %500kHz = 0.8V/MPa       2.25MHz = 0.92V/MPa
+centerX = 83.5;
+centerY = 162;
 
+
+%reading and processing scan data
 M = readmatrix(file);
 
 x = M([1:end],1);
@@ -25,9 +52,8 @@ x1 = min(x):xRes:max(x);
 y1 = min(y):yRes:max(y);
 z1 = min(z):zRes:max(z);
 
-centerX = 83.5;
-centerY = 162;
 topZ = max(z);
+
 
 %  Y  Fig 11 Fig 13	Fig 15	AreaAvgError	AreaAvgError1	AreaAvgErrorNorm
 % 159	570	  540	280     	271.6           271.9       	86.5
@@ -51,11 +77,11 @@ xCrop = x1(1:xMax);
 
 [X,Y,Z] = meshgrid(xCrop,y1,z1);
 
+
+% rearrange scan data from vector into 2D matrix
 ptsPerLayer = length(x1)*length(y1);
 numLayers = length(z)/ptsPerLayer;
-
 startIndex = 1;
-
 for layer = 1:numLayers
     for i = 1:length(y1)
         endIndex = startIndex+length(x1)-1;
@@ -65,13 +91,12 @@ for layer = 1:numLayers
             A(i,:,layer) = flip(A(i,:,layer));
         end  
     end
-    A1 = imgaussfilt(A,1);
-
+    A1 = imgaussfilt(A,1); % filter image to make smoother
 %     A2 = imgaussfilt(A,2);
-
 end
 
-Anorm = A./max(max(A));
+% data manipulation of 2D matrix for plotting
+Anorm = A./max(A,[],'all');
 
 A = flip(A,3);
 A1 = flip(A1,3);
@@ -92,6 +117,8 @@ AA1 = reshape(A1Crop(yMidIndex,:,:),length(xCrop),[]);
 % AA2 = reshape(A2Crop(yMidIndex,:,:),length(xCrop),[]);
 AAnorm = reshape(AnormCrop(yMidIndex,:,:),length(xCrop),[]);
 
+
+%%% plot data
 
 % Scan Plot
 figure
@@ -172,20 +199,22 @@ ylabel('Amplitude (unitless)')
 
 
 %%%%%%%%%%%%%%%Theory Calcs%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% parameters
 f = 500e3; %frequency (Hz = 1/s)
 rad = 19e-3; %radius of transducer (m)
-
 rho0 = 1000; %equilibrium density = density of water (kg/m^3)
 c = 1480; %speed of sound in water (m/s)
 L = c/f; %wavelength (m)
 w = f*2*pi; %frequency of signal (rad/s)
 K = 2*pi/L; %wave number (1/m)
-t = 0.1; %linspace(0,0.1,500); %time (s)
-
+t = 0.1; %time (s)
 volt = 9.6; %0.665; %Vpp (V)
+
+% transducer dynamics calculation
 dh = (250e-12)*volt; %max displacement (m)      400e-12 for 2.25MHz elements      250e-12 for 500kHz elements
 U0 = w*dh; %max speed of transducer surface (m/s)
 
+% data manipulation
 xMin = min(xCrop);
 xMax = max(xCrop);
 zMin = min(z1);
@@ -199,6 +228,8 @@ x = linspace(xMin,xMax,length(xCrop));
 z = linspace(zMin,zMax,length(z1));
 p = zeros([length(x),length(z),length(t)]); %complex pressure
 
+
+% calculate theoretical acoustic field
 for i = 1:length(x) %spacial grid
     for k = 1:length(z)
         
@@ -218,13 +249,17 @@ for i = 1:length(x) %spacial grid
     end
 end
 
+% data manipulation of theory data for plotting
 P = abs(p); %Pa
 PMPa = P./(10^6); %MPa
-Pnorm = PMPa./max(max(PMPa));
+Pnorm = PMPa./max(PMPa,[],'all');
 
 [X,Z] = meshgrid(x,z);
 X = X.';
 Z = Z.';
+
+
+%%% data plotting
 
 % Theory Plot
 figure

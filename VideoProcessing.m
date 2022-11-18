@@ -1,14 +1,32 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  This script takes a video, extracts the individual frames, detects any 
+%  circles (bubbles) present, and measures the radius of the circle in both
+%  pixels and um.
+%
+%  The parameters that need to be set are:
+%    fps = frame rate used to capture video
+%    vidName = name of video file (including file extenstion)
+%    freq = driving frequency
+%    pxlSize = size of pixel in m
+%
+%  S. Coughenour - Nov. 17, 2022
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear
 close all
 clc
 
-vid = VideoReader('BubbleOscillation3_27.02kHz_100Vpp_80000fps.mp4'); %might also work 'video.avi'
-numFrames = vid.NumberOfFrames;
+vidName = 'BubbleOscillation3_27.02kHz_100Vpp_80000fps.mp4';
 fps = 80000;
+freq = 27.02*10^3; %Hz
+pxlSize = 2*10^-6; %m
+
 dt = 1/fps;
 t = 0;
-
-freq = 27.02*10^3; %Hz
+vid = VideoReader(vidName);
+numFrames = vid.NumberOfFrames;
 period = 1/freq;
 period10 = 10*period;
 endFrame = ceil(period10/dt);
@@ -32,7 +50,7 @@ for i = 1:1:endFrame%100
 %     h = viscircles(center,radius);
 end
 
-radii_um = radii*2*10^-6;
+radii_um = radii*pxlSize;
 
 figure
 plot(tt,radii_um)

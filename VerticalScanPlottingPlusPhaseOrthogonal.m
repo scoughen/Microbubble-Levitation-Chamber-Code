@@ -1,15 +1,34 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  This script plots a given scan in a specified vertical plane. This
+%  vertical plane is orthogonal to the primary vertical scan plotting
+%  script
+%
+%  The parameters that need to be set are:
+%    Scan parameter:
+%      file = file name of the scan
+%      xRes, yRes, zRes = the x, y, and z resolution of the scan
+%      vToMPa = the sensitivity of the needle hydrophone used for scanning
+%      centerX, centerY = are the X and Y coordinates of the center of the
+%                         acoustic field
+% 
+%  S. Coughenour - Nov. 17, 2022
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear
 close all
 clc
 
+% parameters
 file = "LiLens500kHzHighResPhaseScanOrthogonal5SampleAvg0SecDelay3mmOffsetFromTransducerNewAmp9.6VppPart3.csv";       
 xRes = 1;
 yRes = 0.5;
 zRes = 0.5;
 vToMPa = 0.8; %500kHz = 0.8V/MPa       2.25MHz = 0.92V/MPa
 
-% Layer = 5;
 
+%reading and processing scan data
 M = readmatrix(file);
 
 x = M(1:end,1);
@@ -39,27 +58,28 @@ yCrop = y1(1:yMax);
 
 [X,Y,Z] = meshgrid(x1,yCrop,z1);
 
+% rearrange scan data from vector into 2D matrix
 ptsPerLayer = length(x1)*length(y1);
 numLayers = ceil(length(z)/ptsPerLayer);
-
 startIndex = 1;
-
 A = zeros(length(x1), length(y1), length(z1));
 Pha = zeros(length(x1), length(y1), length(z1));
-
 for i = 1:length(a)
     A(x(i)*2-min(x*2)+1, y(i)*2-min(y*2)+1, z(i)*2-min(z*2)+1) = a(i);
     Pha(x(i)*2-min(x*2)+1, y(i)*2-min(y*2)+1, z(i)*2-min(z*2)+1) = pha(i);
 end
-
 
 for i = 2:11 %2:8 for part 1 and 2:6 for part 2 and 2:11 for part 3
     A(i,:,:) = [];
     Pha(i,:,:) = [];
 end
 
-A1 = imgaussfilt(A,1);
+A1 = imgaussfilt(A,1); %smoothing data
 A2 = imgaussfilt(A,2);
+
+
+
+% data manipulation of 2D matrix for plotting
 
 % A = flip(A,3);
 % A1 = flip(A1,3);
@@ -82,6 +102,9 @@ PPha = reshape(PhaCrop(xMidIndex,:,:),length(yCrop),[]);
 
 TopAvgScan = sum(AA(:,9), 'all') / length(A(:,1))
 AreaAvgScan = sum(AA, 'all') / (length(A(:,1))*length(A(1,:)))
+
+
+%%% plot data
 
 figure
 surf(xx,zz,PPha, 'edgecolor','none')
