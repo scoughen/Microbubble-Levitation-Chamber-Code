@@ -38,7 +38,7 @@ end
 
 fvec = reshape(f,1,[]); % convert 3-d matrix into vector
 fvecSort = sort(fvec/1000); % sort fvec and convert to kHz
-fvecSortTrim = fvecSort(1:numModes); % extract 1000 lowest frequency modes
+fvecSortTrim = fvecSort(2:numModes); % extract 1000 lowest frequency modes
 
 
 
