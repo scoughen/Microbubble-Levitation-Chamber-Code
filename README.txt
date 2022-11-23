@@ -1,6 +1,6 @@
 The following is a summary of the purpose/use of each of the programs contained in this repository.
 
-LabVIEW Code:
+LabVIEW Code: 
 	Custom Oscope Functions:
 		Oscop 2 Channel Phase Diff.vi - This vi reads and outputs the phase difference between the two oscilloscope channels.
 		
