@@ -29,9 +29,13 @@ LabVIEW Code:
 	
 	
 
+FFT.m - This script takes the time series of a signal read from an oscilloscope and calculates/plots the FFT.
+
 HorizontalScanPlottingPlusPhase.m - This script takes the data (both amplitude and phase) from a horizontal (xy-plane) acoustic scan and plots it.
 
-ImageProcessing.m - This script takes an image of a bubble and extracts the position and radius.
+ImageProcessing.m - This script takes an image of a (spherical) bubble and extracts the position and radius.
+
+NonsphericalOscillationAnalysis_MLC.m - This script takes an image of a bubble, extracts the r(theta) radial description of the bubble, and calculates the nonspherical shape modes of the bubble.
 
 ScanAndTheoryComparison.m - This script plots the scan of the vertical acoustic field of a plane transducer, calculates the theoretical acoustic field for a plane transducer of the given specs and driving conditions (these should be set to match thoes of the scanned transducer), and compares them.
 
