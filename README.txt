@@ -35,6 +35,8 @@ HorizontalScanPlottingPlusPhase.m - This script takes the data (both amplitude a
 
 ImageProcessing.m - This script takes an image of a (spherical) bubble and extracts the position and radius.
 
+MinnaertFrequencyCalculator.m - This script calculates the resonant frequency of a bubble of a given static radius.
+
 NonsphericalOscillationAnalysis_MLC.m - This script takes an image of a bubble, extracts the r(theta) radial description of the bubble, and calculates the nonspherical shape modes of the bubble.
 
 ScanAndTheoryComparison.m - This script plots the scan of the vertical acoustic field of a plane transducer, calculates the theoretical acoustic field for a plane transducer of the given specs and driving conditions (these should be set to match thoes of the scanned transducer), and compares them.
